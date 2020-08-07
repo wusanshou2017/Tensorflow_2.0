@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 tf.random.set_seed(3)
 
 t = tf.random.uniform([5, 5], minval=0, maxval=10, dtype=tf.int32)
@@ -80,3 +81,14 @@ tf.print(c, "\n")
 
 tf.print(tf.boolean_mask(c, c < 0), "\n")
 tf.print(c[c < 0])  # 布尔索引，为boolean_mask的语法糖形式
+
+# 找到张量中小于0的元素,将其换成np.nan得到新的张量
+# tf.where和np.where作用类似，可以理解为if的张量版本
+
+c = tf.constant([[-1, 1, -1], [2, 2, -2], [3, -3, 3]], dtype=tf.float32)
+d = tf.where(c < 0, tf.fill(c.shape, np.nan), c)
+tf.print(d)
+
+# 如果where只有一个参数，将返回所有满足条件的位置坐标
+indices = tf.where(c < 0)
+tf.print(indices)

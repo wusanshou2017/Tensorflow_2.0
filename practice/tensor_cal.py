@@ -30,3 +30,6 @@ tf.print(s)
 a = tf.range(1, 10)
 tf.print(tf.math.cumsum(a))
 tf.print(tf.math.cumprod(a))
+
+tf.print(tf.math.cumsum(a))
+tf.print(tf.math.cumsum(a))

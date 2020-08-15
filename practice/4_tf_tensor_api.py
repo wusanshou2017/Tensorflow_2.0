@@ -35,5 +35,6 @@ tf.print(c)
 I = tf.eye(3, 3)
 tf.print(I)
 tf.print(" ")
+
 t = tf.linalg.diag([1, 2, 3])
 tf.print(t)

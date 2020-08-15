@@ -76,7 +76,6 @@ valid_loss = tf.keras.metrics.Mean(name='valid_loss')
 valid_metric = tf.keras.metrics.MeanAbsoluteError(name='valid_mae')
 
 
-
 ### 自定义 训练 ########
 @tf.function
 def train_step(model, features, labels):
@@ -89,6 +88,7 @@ def train_step(model, features, labels):
     train_loss.update_state(loss)
     train_metric.update_state(labels, predictions)
 
+
 @tf.function
 def valid_step(model, features, labels):
     predictions = model(features)
@@ -98,22 +98,22 @@ def valid_step(model, features, labels):
 
 
 @tf.function
-def train_model(model,ds_train,ds_valid,epochs):
-    for epoch in tf.range(1,epochs+1):
+def train_model(model, ds_train, ds_valid, epochs):
+    for epoch in tf.range(1, epochs + 1):
         for features, labels in ds_train:
-            train_step(model,features,labels)
+            train_step(model, features, labels)
 
         for features, labels in ds_valid:
-            valid_step(model,features,labels)
+            valid_step(model, features, labels)
 
         logs = 'Epoch={},Loss:{},MAE:{},Valid Loss:{},Valid MAE:{}'
 
-        if  epoch%100 ==0:
+        if epoch % 100 == 0:
             printbar()
             tf.print(tf.strings.format(logs,
-            (epoch,train_loss.result(),train_metric.result(),valid_loss.result(),valid_metric.result())))
-            tf.print("w=",model.layers[0].kernel)
-            tf.print("b=",model.layers[0].bias)
+                                       (epoch, train_loss.result(), train_metric.result(), valid_loss.result(), valid_metric.result())))
+            tf.print("w=", model.layers[0].kernel)
+            tf.print("b=", model.layers[0].bias)
             tf.print("")
 
         train_loss.reset_states()
@@ -121,4 +121,5 @@ def train_model(model,ds_train,ds_valid,epochs):
         train_metric.reset_states()
         valid_metric.reset_states()
 
-train_model(model,ds_train,ds_valid,400)
+
+train_model(model, ds_train, ds_valid, 400)

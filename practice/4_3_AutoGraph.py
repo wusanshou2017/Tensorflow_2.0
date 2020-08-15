@@ -8,8 +8,9 @@
 import numpy as np
 import tensorflow as tf
 
-
 # 1，被@tf.function修饰的函数应尽可能使用TensorFlow中的函数而不是Python中的其他函数。例如使用tf.print而不是print，使用tf.range而不是range，使用tf.constant(True)而不是True.
+
+
 @tf.function
 def np_random():
     a = np.random.randn(3, 3)
@@ -65,7 +66,7 @@ tensor_list = []
 #@tf.function #加上这一行切换成Autograph结果将不符合预期！！！
 
 
-# @tf.function
+###
 def append_tensor(x):
     tensor_list.append(x)
     return tensor_list

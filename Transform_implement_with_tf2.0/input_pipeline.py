@@ -63,11 +63,11 @@ print(eng_tensor[:3])
 print(cn_tensor[:3])
 
 
-def load_dataset(path, num_examples=None):
-    # 创建清理过的输入输出对
-    targ_lang, inp_lang = create_dataset(path, num_examples)
+# def load_dataset(path, num_examples=None):
+#     # 创建清理过的输入输出对
+#     targ_lang, inp_lang = create_dataset(path, num_examples)
 
-    input_tensor, inp_lang_tokenizer = tokenize(inp_lang)
-    target_tensor, targ_lang_tokenizer = tokenize(targ_lang)
+#     input_tensor, inp_lang_tokenizer = tokenize(inp_lang)
+#     target_tensor, targ_lang_tokenizer = tokenize(targ_lang)
 
-    return input_tensor, target_tensor, inp_lang_tokenizer, targ_lang_tokenizer
+#     return input_tensor, target_tensor, inp_lang_tokenizer, targ_lang_tokenizer

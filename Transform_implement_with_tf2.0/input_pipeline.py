@@ -7,68 +7,69 @@ import re
 assert(tf.__version__.startswith("2."))
 
 
-def preprocess_text(input_file):
+class DataPreprocess():
 
-    f = open(input_file, "r", encoding="utf-8")
-    all_lines = f.readlines()
-    eng_lines = [line.split("\t")[0] for line in all_lines]
-    cn_lines = [line.split("\t")[1] for line in all_lines]
+    def preprocess_text(self, input_file):
 
-    return eng_lines, cn_lines
+        f = open(input_file, "r", encoding="utf-8")
+        all_lines = f.readlines()
+        eng_lines = [line.split("\t")[0] for line in all_lines]
+        cn_lines = [line.split("\t")[1] for line in all_lines]
+        eng_lines = ["<start> " +
+                     self.preprocess_sentence(line) + " <end>" for line in eng_lines]
+        cn_lines = ["<start> " +
+                    " ".join(line) + " <end>" for line in cn_lines]
+        return eng_lines, cn_lines
 
+    def preprocess_sentence(self, w):
 
-eng_lines, cn_lines = preprocess_text("cmn.txt")
-assert(len(eng_lines) == len(cn_lines))
+        w = w.lower().strip()
+        w = re.sub(r"([?.!,¿])", r" \1 ", w)
+        w = re.sub(r'[" "]+', " ", w)
 
+        w = w.rstrip().strip()
 
-def preprocess_sentence(w):
+        return w
 
-    w = w.lower().strip()
-    w = re.sub(r"([?.!,¿])", r" \1 ", w)
-    w = re.sub(r'[" "]+', " ", w)
+    @staticmethod
+    def filter_max_length(self, x, y, max_length=40):
 
-    # 除了 (a-z, A-Z, ".", "?", "!", ",")，将所有字符替换为空格
-    # w = re.sub(r"[a-zA-Z?.!,¿]+", " ", w)
+        return tf.logical_and(tf.size(x) <= max_length,
+                              tf.size(y) <= max_length)
 
-    w = w.rstrip().strip()
+    def tokenize(self, lang):
 
-    # 给句子加上开始和结束标记
-    # 以便模型知道何时开始和结束预测
-    return w
+        lang_tokenizer = tf.keras.preprocessing.text.Tokenizer(
+            filters='')
 
+        lang_tokenizer.fit_on_texts(lang)
 
-eng_lines = ["<start> " +
-             preprocess_sentence(line) + " <end>" for line in eng_lines]
-cn_lines = ["<start> " + " ".join(line) + " <end>" for line in cn_lines]
+        tensor = lang_tokenizer.texts_to_sequences(lang)
 
-print(eng_lines[:10])
-print(cn_lines[:10])
+        tensor = tf.keras.preprocessing.sequence.pad_sequences(tensor,
+                                                               padding='post')
 
-
-def tokenize(lang):
-    lang_tokenizer = tf.keras.preprocessing.text.Tokenizer(
-        filters='')
-    lang_tokenizer.fit_on_texts(lang)
-
-    tensor = lang_tokenizer.texts_to_sequences(lang)
-
-    tensor = tf.keras.preprocessing.sequence.pad_sequences(tensor,
-                                                           padding='post')
-
-    return tensor, lang_tokenizer
+        return tensor, lang_tokenizer
 
 
-eng_tensor, eng_tokenizer = tokenize(eng_lines)
-cn_tensor, cn_tokenizer = tokenize(cn_lines)
-print(eng_tensor[:3])
-print(cn_tensor[:3])
+if __name__ == '__main__':
+    dp = DataPreprocess()
+    eng_lines, cn_lines = dp.preprocess_text("cmn.txt")
+    eng_tensor, eng_tokenizer = dp.tokenize(eng_lines)
+    cn_tensor, cn_tokenizer = dp.tokenize(cn_lines)
+    BUFF_SIZE = len(cn_tensor)
+    BATCH_SIZE = 64
+    train_dataset = tf.data.Dataset.from_tensor_slices(
+        (cn_tensor, eng_tensor)).shuffle(BUFF_SIZE)
+    # train_dataset = train_dataset.filter(dp.filter_max_length)
+    # 将数据集缓存到内存中以加快读取速度。
+    train_dataset = train_dataset.cache()
+    train_dataset = train_dataset.shuffle(BUFF_SIZE).padded_batch(BATCH_SIZE)
+    train_dataset = train_dataset.prefetch(tf.data.experimental.AUTOTUNE)
 
+    cn_batch, en_batch = next(iter(train_dataset))
+    print(cn_batch)
+    print(cn_batch.shape)
 
-# def load_dataset(path, num_examples=None):
-#     # 创建清理过的输入输出对
-#     targ_lang, inp_lang = create_dataset(path, num_examples)
-
-#     input_tensor, inp_lang_tokenizer = tokenize(inp_lang)
-#     target_tensor, targ_lang_tokenizer = tokenize(targ_lang)
-
-#     return input_tensor, target_tensor, inp_lang_tokenizer, targ_lang_tokenizer
+    print(en_batch)
+    print(en_batch.shape)

@@ -59,12 +59,15 @@ if __name__ == '__main__':
     cn_tensor, cn_tokenizer = dp.tokenize(cn_lines)
     BUFF_SIZE = len(cn_tensor)
     BATCH_SIZE = 64
+    MAX_LENGTH = 40
+
     train_dataset = tf.data.Dataset.from_tensor_slices(
         (cn_tensor, eng_tensor)).shuffle(BUFF_SIZE)
     # train_dataset = train_dataset.filter(dp.filter_max_length)
     # 将数据集缓存到内存中以加快读取速度。
     train_dataset = train_dataset.cache()
-    train_dataset = train_dataset.shuffle(BUFF_SIZE).padded_batch(BATCH_SIZE)
+    train_dataset = train_dataset.shuffle(
+        BUFF_SIZE).padded_batch(BATCH_SIZE, ([64], [None]))
     train_dataset = train_dataset.prefetch(tf.data.experimental.AUTOTUNE)
 
     cn_batch, en_batch = next(iter(train_dataset))

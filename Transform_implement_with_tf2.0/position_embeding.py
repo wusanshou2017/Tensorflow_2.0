@@ -26,16 +26,28 @@ class Position_Embedding():
 
         return tf.cast(pos_encoding, dtype=tf.float32)
 
+    # mask
+    def create_padding_mask(seq):
+        seq = tf.cast(tf.math.equal(seq, 0), tf.float32)
+        return seq[:, tf.newaxis, tf.newaxis, :]  # [batch_size,1,1,seq_length]
+
+    def create_look_ahead_mask(size):
+        mask = 1 - tf.linalg.band_part(tf.ones((size, size)), -1, 0)
+        return mask  # (seq_len, seq_len)
+
 
 if __name__ == '__main__':
 
-    pos_emb = Position_Embedding()
-    res = pos_emb.positional_encoding(50, 512)
-    print(res.shape)
+    # pos_emb = Position_Embedding()
+    # res = pos_emb.positional_encoding(50, 512)
+    # print(res.shape)
 
-    plt.pcolormesh(res[0], cmap='RdBu')
-    plt.xlabel('Depth')
-    plt.xlim((0, 512))
-    plt.ylabel('Position')
-    plt.colorbar()
-    plt.show()
+    # plt.pcolormesh(res[0], cmap='RdBu')
+    # plt.xlabel('Depth')
+    # plt.xlim((0, 512))
+    # plt.ylabel('Position')
+    # plt.colorbar()
+    # plt.show()
+    x = tf.random.uniform((1, 3))
+    print(x)
+    print(x.shape)

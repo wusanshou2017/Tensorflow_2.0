@@ -50,40 +50,6 @@ def print_out(q, k, v):
     print(temp_out)
 
 
-np.set_printoptions(suppress=True)
-
-temp_k = tf.constant([[10, 0, 0],
-                      [0, 10, 0],
-                      [0, 0, 10],
-                      [0, 0, 10]], dtype=tf.float32)  # (4, 3)
-
-temp_v = tf.constant([[1, 0],
-                      [10, 0],
-                      [100, 5],
-                      [1000, 6]], dtype=tf.float32)  # (4, 2)
-
-# 这条 `请求（query）符合第二个`主键（key）`，
-# 因此返回了第二个`数值（value）`。
-temp_q = tf.constant([[0, 10, 0]], dtype=tf.float32)  # (1, 3)
-
-print_out(temp_q, temp_k, temp_v)
-
-# 这条请求符合重复出现的主键（第三第四个），
-# 因此，对所有的相关数值取了平均。
-temp_q = tf.constant([[0, 0, 10]], dtype=tf.float32)  # (1, 3)
-print_out(temp_q, temp_k, temp_v)
-
-# 这条请求符合第一和第二条主键，
-# 因此，对它们的数值去了平均。
-temp_q = tf.constant([[10, 10, 0]], dtype=tf.float32)  # (1, 3)
-print_out(temp_q, temp_k, temp_v)
-
-
-temp_q = tf.constant([[0, 0, 10], [0, 10, 0], [10, 10, 0]],
-                     dtype=tf.float32)  # (3, 3)
-print_out(temp_q, temp_k, temp_v)
-
-
 class MultiHeadAttention(tf.keras.layers.Layer):
     def __init__(self, d_model, num_heads):
         super(MultiHeadAttention, self).__init__()
@@ -136,3 +102,57 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         output = self.dense(concat_attention)
 
         return output, attention_weights
+
+    def point_wise_feed_forward_network(d_model, dff):
+        return tf.keras.Sequential([
+            # (batch_size, seq_len, dff)
+            tf.keras.layers.Dense(dff, activation='relu'),
+            tf.keras.layers.Dense(d_model)  # (batch_size, seq_len, d_model)
+        ])
+
+
+if __name__ == '__main__':
+
+    np.set_printoptions(suppress=True)
+
+    temp_k = tf.constant([[10, 0, 0],
+                          [0, 10, 0],
+                          [0, 0, 10],
+                          [0, 0, 10]], dtype=tf.float32)  # (4, 3)
+
+    temp_v = tf.constant([[1, 0],
+                          [10, 0],
+                          [100, 5],
+                          [1000, 6]], dtype=tf.float32)  # (4, 2)
+
+    # 这条 `请求（query）符合第二个`主键（key）`，
+    # 因此返回了第二个`数值（value）`。
+    temp_q = tf.constant([[0, 10, 0]], dtype=tf.float32)  # (1, 3)
+
+    print_out(temp_q, temp_k, temp_v)
+
+    # 这条请求符合重复出现的主键（第三第四个），
+    # 因此，对所有的相关数值取了平均。
+    temp_q = tf.constant([[0, 0, 10]], dtype=tf.float32)  # (1, 3)
+    print_out(temp_q, temp_k, temp_v)
+
+    # 这条请求符合第一和第二条主键，
+    # 因此，对它们的数值去了平均。
+    temp_q = tf.constant([[10, 10, 0]], dtype=tf.float32)  # (1, 3)
+    print_out(temp_q, temp_k, temp_v)
+
+    temp_q = tf.constant([[0, 0, 10], [0, 10, 0], [10, 10, 0]],
+                         dtype=tf.float32)  # (3, 3)
+    print_out(temp_q, temp_k, temp_v)
+
+    ####### MultiHeadAttention demo  ###############
+
+    temp_mha = MultiHeadAttention(d_model=512, num_heads=8)
+
+    # (batch_size ,encoder_sequence, d_model)
+    y = tf.random.uniform((1, 60, 512))
+
+    out, attn = temp_mha(y, k=y, q=y, mask=None)
+
+    print(out.shape)
+    print(attn.shape)

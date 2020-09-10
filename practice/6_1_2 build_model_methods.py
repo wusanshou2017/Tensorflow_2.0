@@ -6,7 +6,7 @@ assert(tf.__version__.startswith("2."))
 # from tqdm import tqdm
 
 from tensorflow.keras import *
-
+import matplotlib.pyplot as plt
 
 train_token_path="../data/imdb/train_token.csv"
 test_token_path="../data/imdb/test_token.csv"
@@ -35,6 +35,18 @@ ds_test=  tf.data.TextLineDataset(filenames = [test_token_path]) \
 
 
 tf.keras.backend.clear_session()
+
+def plot_metric(history, metric):
+    train_metrics = history.history[metric]
+    val_metrics = history.history['val_'+metric]
+    epochs = range(1, len(train_metrics) + 1)
+    plt.plot(epochs, train_metrics, 'bo--')
+    plt.plot(epochs, val_metrics, 'ro-')
+    plt.title('Training and validation '+ metric)
+    plt.xlabel("Epochs")
+    plt.ylabel(metric)
+    plt.legend(["train_"+metric, 'val_'+metric])
+    plt.show()
 
 
 # 先自定义一个残差模块，为自定义Layer

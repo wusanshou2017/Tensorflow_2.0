@@ -55,6 +55,7 @@ class DataPreprocess():
 if __name__ == '__main__':
     dp = DataPreprocess()
     eng_lines, cn_lines = dp.preprocess_text("cmn.txt")
+    assert (len(eng_lines) == len(cn_lines))
     eng_tensor, eng_tokenizer = dp.tokenize(eng_lines)
     cn_tensor, cn_tokenizer = dp.tokenize(cn_lines)
     BUFF_SIZE = len(cn_tensor)
@@ -67,9 +68,9 @@ if __name__ == '__main__':
     # 将数据集缓存到内存中以加快读取速度。
     train_dataset = train_dataset.cache()
     train_dataset = train_dataset.shuffle(
-        BUFF_SIZE).padded_batch(BATCH_SIZE, ([64], [None]))
+        BUFF_SIZE).padded_batch(BATCH_SIZE, ([None], [None]))
     train_dataset = train_dataset.prefetch(tf.data.experimental.AUTOTUNE)
-
+    
     cn_batch, en_batch = next(iter(train_dataset))
     print(cn_batch)
     print(cn_batch.shape)

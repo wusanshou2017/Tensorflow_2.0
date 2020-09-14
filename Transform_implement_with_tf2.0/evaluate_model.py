@@ -1,6 +1,17 @@
+from input_pipeline import DataPreprocess
+from position_embedding import create_padding_mask,create_look_ahead_mask
+from transformer import Transformer
+import tensorflow as tf
+import time
+
+
+eng_lines, cn_lines = dp.preprocess_text("cmn.txt")
+eng_tensor, eng_tokenizer = dp.tokenize(eng_lines)
+cn_tensor, cn_tokenizer = dp.tokenize(cn_lines)
 
 input_vocab_size = len(cn_tokenizer.word_index)
 target_vocab_size = len(eng_tokenizer.word_index)
+
 
 def evaluate(inp_sentence):
     start_token = [tokenizer_pt.vocab_size]

@@ -2,13 +2,15 @@ import tensorflow_datasets as tfds
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
+
 def plot_graphs(history, metric):
     plt.plot(history.history[metric])
-    plt.plot(history.history['val_'+metric], '')
+    plt.plot(history.history['val_' + metric], '')
     plt.xlabel("Epochs")
     plt.ylabel(metric)
-    plt.legend([metric, 'val_'+metric])
+    plt.legend([metric, 'val_' + metric])
     plt.show()
+
 
 dataset, info = tfds.load('imdb_reviews/subwords8k', with_info=True,
                           as_supervised=True)
@@ -33,10 +35,10 @@ BUFFER_SIZE = 10000
 BATCH_SIZE = 64
 
 train_dataset = train_dataset.shuffle(BUFFER_SIZE)
-train_dataset = train_dataset.padded_batch(BATCH_SIZE,None)
+
+train_dataset = train_dataset.padded_batch(BATCH_SIZE, [])
 
 test_dataset = test_dataset.padded_batch(BATCH_SIZE)
-
 
 
 model = tf.keras.Sequential([
@@ -51,6 +53,5 @@ model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
               metrics=['accuracy'])
 
 history = model.fit(train_dataset, epochs=10,
-                    validation_data=test_dataset, 
+                    validation_data=test_dataset,
                     validation_steps=30)
-

@@ -14,11 +14,11 @@ target_vocab_size = len(eng_tokenizer.word_index)
 
 
 def evaluate(inp_sentence):
-    start_token = [tokenizer_pt.vocab_size]
-    end_token = [tokenizer_pt.vocab_size + 1]
-
+    start_token ="<start>"
+    end_token = "<end>"
+    inp_sentence = start_token +inp_sentence + end_token 
     # 输入语句，增加开始和结束标记
-    inp_sentence = start_token + tokenizer_pt.encode(inp_sentence) + end_token
+    inp_sentence = tokenizer_pt.encode(inp_sentence)
     encoder_input = tf.expand_dims(inp_sentence, 0)
 
     # 因为目标是英语，输入 transformer 的第一个词应该是英语的开始标记。

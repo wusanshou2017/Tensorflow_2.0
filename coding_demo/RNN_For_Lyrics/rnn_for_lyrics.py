@@ -71,36 +71,36 @@ def to_onehot(X, size):
     return [tf.one_hot(x, size, dtype=tf.float32) for x in X.T]
 
 
-# class RNNModel(keras.layers.Layer):
-#     def __init__(self, rnn_layer1, rnn_layer2, vocab_size, **kwargs):
-#         super(RNNModel, self).__init__(**kwargs)
-#         self.rnn1 = rnn_layer1
-#         self.rnn2 = rnn_layer2
-#         self.vocab_size = vocab_size
-#         self.dense = keras.layers.Dense(vocab_size)
+class MyRNNModel(keras.layers.Layer):
+    def __init__(self, rnn_layer, vocab_size, **kwargs):
+        super(MyRNNModel, self).__init__(**kwargs)
+        self.rnn = rnn_layer
+        self.vocab_size = vocab_size
+        self.dense = keras.layers.Dense(vocab_size)
 
-#     def call(self, inputs, state):
-#         # 将输入转置成(num_steps, batch_size)后获取one-hot向量表示
-#         X = tf.one_hot(tf.transpose(inputs), self.vocab_size)
-#         Y, state = self.rnn1(X, state)
-#         # 全连接层会首先将Y的形状变成(num_steps * batch_size, num_hiddens)，它的输出
-#         # 形状为(num_steps * batch_size, vocab_size)
-#         Y, state = self.rnn2(Y, state)
-#         output = self.dense(tf.reshape(Y, (-1, Y.shape[-1])))
-#         return output, state
+    def call(self, inputs, state):
+        # 将输入转置成(num_steps, batch_size)后获取one-hot向量表示
+        X = tf.one_hot(tf.transpose(inputs), self.vocab_size)
+        Y,state = self.rnn(X, state)
+        # 全连接层会首先将Y的形状变成(num_steps * batch_size, num_hiddens)，它的输出
+        # 形状为(num_steps * batch_size, vocab_size)
+        output = self.dense(tf.reshape(Y,(-1, Y.shape[-1])))
+        return output, state
 
+    def get_initial_state(self, *args, **kwargs):
+        return self.rnn.cell.get_initial_state(*args, **kwargs)
 
+(corpus_indices, char_to_idx, idx_to_char,vocab_size) = load_data()
+num_inputs, num_hiddens, num_outputs = vocab_size, 256, vocab_size
 lr = 1e-4  # 注意调整学习率
-num_hiddens = 256
-num_steps = 35
+gru_layer = keras.layers.GRU(num_hiddens,time_major=True,return_sequences=True,return_state=True)
 
-
-num_epochs, num_steps, batch_size, lr, clipping_theta = 360, 35, 32, 1e2, 1e-2
-pred_period, pred_len, prefixes = 40, 50, ['想', '不想']
-lstm_layer = keras.layers.LSTM(
-    num_hiddens, time_major=True, return_sequences=True, return_state=True)
-model = RNNModel(lstm_layer, vocab_size)
+num_epochs, num_steps, batch_size, lr, clipping_theta = 1600, 35, 32, 1e-4, 1e-2
+pred_period, pred_len, prefixes = 50, 50, ['想', '不想']
+model = MyRNNModel(gru_layer, vocab_size)
 train_and_predict_rnn_keras(model, num_hiddens, vocab_size,
                             corpus_indices, idx_to_char, char_to_idx,
                             num_epochs, num_steps, lr, clipping_theta,
                             batch_size, pred_period, pred_len, prefixes)
+
+print("finish...")

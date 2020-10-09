@@ -34,6 +34,8 @@ ds_test = tf.data.TextLineDataset(filenames=[test_token_path]) \
     .shuffle(buffer_size=1000).batch(BATCH_SIZE) \
     .prefetch(tf.data.experimental.AUTOTUNE)
 
+demo = iter(ds_test)
+print("demo_data:...", next(demo))
 
 tf.keras.backend.clear_session()
 

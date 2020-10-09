@@ -15,7 +15,7 @@ use_gpu = True
 @app.route("/predict", methods=["POST"])
 def predict():
     # Initialize the data dictionary that will be returned from the view.
-    data = {"success": False}
+    data = {"success": False, "predictions": []}
 
     # Ensure an image was properly uploaded to our endpoint.
     if flask.request.method == 'POST':
@@ -25,10 +25,14 @@ def predict():
         text_lst = body["text"]
         print(text_lst)
 
-        # to do 
-        # results = model.call(text_lst[0])
-        # for r in results:
-        #     data['predictions'].append(r)
+        # to do
+        features = tf.cast(tf.strings.to_number(
+            tf.strings.split(text_lst[0], " ")), tf.int32)
+        features = tf.reshape(features, [-1, 200])
+        results = model.predict(features)
+        print(results)
+        for r in results:
+            data['predictions'].append(r)
 
         # Indicate that the request was a success.
         data["success"] = True

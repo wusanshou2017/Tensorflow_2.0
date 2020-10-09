@@ -32,7 +32,7 @@ def predict():
         results = model.predict(features)
         print(results)
         for r in results:
-            data['predictions'].append(r)
+            data['predictions'].append(str(r[0]))
 
         # Indicate that the request was a success.
         data["success"] = True

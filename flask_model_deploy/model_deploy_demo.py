@@ -126,4 +126,6 @@ callback = tf.keras.callbacks.EarlyStopping(
 history = model.fit(ds_train, validation_data=ds_test,
                     epochs=6, callbacks=[callback])
 
-plot_metric(history, "AUC")
+# plot_metric(history, "AUC")
+model.save('./model/', save_format="tf")
+print('export saved model.')

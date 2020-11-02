@@ -5,10 +5,10 @@ print(tf.__version__)
 import os
 
 
-from tensorflow.keras.datasets import cifar10
+from tensorflow.keras.datasets import fashion_mnist
 batch_size = 64
 
-(x_train, y_train), (x_test, y_test) = cifar10.load_data()
+(x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
 x_train = tf.cast(x_train, tf.float32) / 255  # 在进行矩阵相乘时需要float型，故强制类型转换为float型
 x_test = tf.cast(x_test, tf.float32) / 255  # 在进行矩阵相乘时需要float型，故强制类型转换为float型
 

@@ -11,6 +11,7 @@ true_b = 4.2
 features = tf.random.normal((num_examples, num_inputs),stddev = 1)
 labels = true_w[0] * features[:,0] + true_w[1] * features[:,1] + true_b
 labels += tf.random.normal(labels.shape,stddev=0.01)
+print(labels.shape)
 
 def set_figsize(figsize=(3.5, 2.5)):
     plt.rcParams['figure.figsize'] = figsize

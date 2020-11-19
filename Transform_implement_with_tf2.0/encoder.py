@@ -62,7 +62,6 @@ class Encoder(tf.keras.layers.Layer):
 
         return x  # (batch_size, input_seq_len, d_model)
         
-
 if __name__ == '__main__':
 
     sample_encoder_layer = EncoderLayer(512, 8, 2048)

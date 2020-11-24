@@ -68,6 +68,7 @@ def fit_and_plot(train_features, test_features, train_labels, test_labels):
 
 fit_and_plot(poly_features[:n_train, :], poly_features[n_train:, :],
              labels[:n_train], labels[n_train:])
+
 fit_and_plot(features[:n_train, :], features[n_train:, :], labels[:n_train],
              labels[n_train:])
 

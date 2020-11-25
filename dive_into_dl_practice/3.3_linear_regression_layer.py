@@ -14,7 +14,7 @@ batch_size = 10
 # 将训练数据的特征和标签组合
 dataset = tfdata.Dataset.from_tensor_slices((features, labels))
 # 随机读取小批量
-dataset = dataset.shuffle(buffer_size=num_examples) 
+dataset = dataset.shuffle(buffer_size=num_examples)
 dataset = dataset.batch(batch_size)
 data_iter = iter(dataset)
 for X, y in data_iter:
@@ -38,9 +38,9 @@ for epoch in range(1, num_epochs + 1):
     for (batch, (X, y)) in enumerate(dataset):
         with tf.GradientTape() as tape:
             l = loss(model(X, training=True), y)
-        
+
         grads = tape.gradient(l, model.trainable_variables)
         trainer.apply_gradients(zip(grads, model.trainable_variables))
-    
+
     l = loss(model(features), labels)
     print('epoch %d, loss: %f' % (epoch, l))

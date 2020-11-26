@@ -64,7 +64,7 @@ class NestMLP(tf.keras.Model):
         super().__init__()
         self.net = tf.keras.Sequential()
         self.net.add(tf.keras.layers.Flatten())
-        self.net.add(tf.keras.layers.Dense(64, activation=tf.nn.relu))
+        self.net.add(tf.keras.layers.Dense(64, activation=tf.nn.leaky_relu))
         self.net.add(tf.keras.layers.Dense(32, activation=tf.nn.relu))
         self.dense = tf.keras.layers.Dense(units=16, activation=tf.nn.relu)
 

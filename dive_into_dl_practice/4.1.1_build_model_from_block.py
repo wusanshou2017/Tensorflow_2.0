@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 print(tf.__version__)
-
+assert(tf.__version__.startswith("2."))
 
 class MLP(tf.keras.Model):
     def __init__(self):
@@ -39,6 +39,7 @@ print(model(X))
 class FancyMLP(tf.keras.Model):
     def __init__(self):
         super().__init__()
+        
         self.flatten = tf.keras.layers.Flatten()
         self.rand_weight = tf.constant(
             tf.random.uniform((20, 20)))

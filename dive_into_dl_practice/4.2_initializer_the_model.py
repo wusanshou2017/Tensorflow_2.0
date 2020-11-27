@@ -2,7 +2,6 @@ import tensorflow as tf
 import numpy as np
 print(tf.__version__)
 
-
 net = tf.keras.models.Sequential()
 net.add(tf.keras.layers.Flatten())
 net.add(tf.keras.layers.Dense(256, activation=tf.nn.relu))

@@ -77,5 +77,4 @@ for i in range(10):
 
 
 # check the kernel tensor
-
 print(tf.reshape(conv2d.get_weights()[0], (1, 2)))

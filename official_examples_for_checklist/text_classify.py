@@ -106,7 +106,9 @@ print(predictions)
 
 sample_pred_text = ('The movie was cool. The animation and the graphics '
                     'were out of this world. I would recommend this movie.')
+
 predictions = sample_predict(sample_pred_text, pad=True)
+
 print(predictions)
 
 
@@ -158,3 +160,48 @@ print(predictions)
 plot_graphs(history, 'accuracy')
 
 plot_graphs(history, 'loss')
+
+
+# add layers
+model = tf.keras.Sequential([
+    tf.keras.layers.Embedding(encoder.vocab_size, 64),
+    tf.keras.layers.Bidirectional(
+        tf.keras.layers.LSTM(64, return_sequences=True)),
+    tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(32)),
+    tf.keras.layers.Dense(64, activation='relu'),
+    tf.keras.layers.Dropout(0.5),
+    tf.keras.layers.Dense(1)
+])
+
+# tf.keras.losses.CategoricalCrossentropy(from_logits =True)
+
+model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+              optimizer=tf.keras.optimizers.Adam(1e-4),
+              metrics=['accuracy'])
+
+history = model.fit(train_dataset, epochs=10,
+                    validation_data=test_dataset,
+                    validation_steps=30)
+
+test_loss, test_acc = model.evaluate(test_dataset)
+
+print('Test Loss: {}'.format(test_loss))
+print('Test Accuracy: {}'.format(test_acc))
+
+# predict on a sample text without padding.
+
+sample_pred_text = ('The movie was not good. The animation and the graphics '
+                    'were terrible. I would not recommend this movie.')
+predictions = sample_predict(sample_pred_text, pad=False)
+print(predictions)
+
+sample_pred_text = ('The movie was not good. The animation and the graphics '
+                    'were terrible. I would not recommend this movie.')
+predictions = sample_predict(sample_pred_text, pad=True)
+print(predictions)
+
+plot_graphs(history, 'accuracy')
+
+plot_graphs(history, 'loss')
+
+model.save('./text_cls_model')

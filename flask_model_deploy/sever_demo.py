@@ -18,7 +18,7 @@ def predict():
     data = {"success": False, "predictions": []}
 
     # Ensure an image was properly uploaded to our endpoint.
-    if flask.request.method == 'POST':
+    if flask.request.methods == 'POST':
         print("POST_method")
         body = json.loads(flask.request.get_data())
         print(body)
